@@ -20,6 +20,8 @@ class Scanless:
     def get_helper(self, service_name):
             self.services[service_name].help()
 
+    def execute_service(self, service_name,target):
+        self.services[service_name].execute(target)
 
     def load_services(self,services_path):
         '''
