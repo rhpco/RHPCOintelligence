@@ -18,52 +18,59 @@ def worker(scanless):
             break
         # execute command
         scanless.execute_service(item)
-        print(item.getTarget())
         q.task_done()
 
 q = queue.Queue()
 threads = []
 
 def main():
-    parser = get_parser()
-    args = vars(parser.parse_args())
-    scanless = lib.Scanless.Scanless()
-    scanless.load_services(CONST_SERVICE_PATH)
-    route_command(parser, args, scanless)
+    try:
+        parser = get_parser()
+        args = vars(parser.parse_args())
+        scanless = lib.Scanless.Scanless()
+        scanless.load_services(CONST_SERVICE_PATH)
+        route_command(parser, args, scanless)
+    except Exception as detail:
+      print("An error occurred, %s" % detail)
+
 
 
 
 def route_command(parser, args, scanless):
-    print(args)
-    for i in range(args['thread_number']):
-        t = threading.Thread(target=worker, args=(scanless,))
-        t.start()
-        threads.append(t)
-
-
-    # per ogni scanner nella lista
-    # genero un oggetto worker command
-    # il worker eseguira il executive_service sul workercommand
-
-    for service in lib.Utils.Utils.createServiceList(args['scanner']):
-        workerCommand = lib.WorkerCommand.WorkerCommand(service,args['target'],{})
-        q.put(workerCommand)
-
-    q.join()
-    for i in range(args['thread_number']):
-        q.put(None)
-    for t in threads:
-        t.join()
-
     #################################
     if len(sys.argv) <= 1:
         parser.print_help()
         return
     #
-
     #
     if args['list']:
         scanless.get_helpers()
+        return
+    #
+    print(args)
+    serviceList = lib.Utils.Utils.createServiceList(args['scanner'])
+    target = args['target']
+    if target is None:
+        raise Exception('No value for Target')
+
+    for i in range(len(serviceList)):
+        t = threading.Thread(target=worker, args=(scanless,))
+        t.start()
+        threads.append(t)
+    #
+    for service in lib.Utils.Utils.createServiceList(args['scanner']):
+        workerCommand = lib.WorkerCommand.WorkerCommand(service,target,{})
+        q.put(workerCommand)
+
+    q.join()
+    for i in range(len(serviceList)):
+        q.put(None)
+    for t in threads:
+        t.join()
+
+
+
+
     #
     #if args['scanner'] and args['target']:
         #scanless.execute_service(args['scanner'],args['target'])
@@ -77,9 +84,7 @@ def get_parser():
     parser.add_argument('-t', '--target', help='ip or domain to scan', type=str)
     parser.add_argument('-s', '--scanner', help='scanner to use', type=str, default='ipservice', nargs='*')
     parser.add_argument('-l', '--list', help='list scanners', action='store_true')
-    parser.add_argument('-tn', '--thread-number', help='Thread numbers (max 5)', type=int, default=3)
 
-    #parser.add_argument('-a', '--all', help='use all the scanners', action='store_true')
     return parser
 
 
