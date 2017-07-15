@@ -1,4 +1,4 @@
 '''
 Package lib
 '''
-__all__ = ["utils","scanless"]
+__all__ = ["utils","scanless","workercommand"]

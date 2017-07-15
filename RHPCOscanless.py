@@ -1,21 +1,24 @@
 import argparse
 import sys
-import lib.Scanless
 import queue
 import threading
-import time
+import lib.Scanless
+import lib.WorkerCommand
+import lib.Utils
 
 CONST_SERVICE_PATH = "services/"
 
 
 
-def worker():
+def worker(scanless):
     print(threading.current_thread())
     while True:
         item = q.get()
         if item is None:
             break
-        print(item)
+        # execute command
+        scanless.execute_service(item)
+        print(item.getTarget())
         q.task_done()
 
 q = queue.Queue()
@@ -32,31 +35,39 @@ def main():
 
 def route_command(parser, args, scanless):
     print(args)
-    for i in range(3):
-        t = threading.Thread(target=worker)
+    for i in range(args['thread_number']):
+        t = threading.Thread(target=worker, args=(scanless,))
         t.start()
         threads.append(t)
 
-    for s in args['scanner']:
-        q.put(s)
+
+    # per ogni scanner nella lista
+    # genero un oggetto worker command
+    # il worker eseguira il executive_service sul workercommand
+
+    for service in lib.Utils.Utils.createServiceList(args['scanner']):
+        workerCommand = lib.WorkerCommand.WorkerCommand(service,args['target'],{})
+        q.put(workerCommand)
 
     q.join()
-    for i in range(3):
+    for i in range(args['thread_number']):
         q.put(None)
     for t in threads:
         t.join()
-    return
 
-    #
+    #################################
     if len(sys.argv) <= 1:
         parser.print_help()
         return
     #
+
+    #
     if args['list']:
         scanless.get_helpers()
     #
-    if args['scanner'] and args['target']:
-        scanless.execute_service(args['scanner'],args['target'])
+    #if args['scanner'] and args['target']:
+        #scanless.execute_service(args['scanner'],args['target'])
+
 def banner():
     print("Welcome in RHPCOscanless")
 
@@ -66,6 +77,8 @@ def get_parser():
     parser.add_argument('-t', '--target', help='ip or domain to scan', type=str)
     parser.add_argument('-s', '--scanner', help='scanner to use', type=str, default='ipservice', nargs='*')
     parser.add_argument('-l', '--list', help='list scanners', action='store_true')
+    parser.add_argument('-tn', '--thread-number', help='Thread numbers (max 5)', type=int, default=3)
+
     #parser.add_argument('-a', '--all', help='use all the scanners', action='store_true')
     return parser
 
