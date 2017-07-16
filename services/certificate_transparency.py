@@ -6,6 +6,7 @@ import requests
 import texttable as tt
 
 NAME = "Certificate Transparency"
+MODULE_NAME = "certificate_transparency"
 URL = "https://crt.sh/"
 PATH = "?q="
 WILDCARD = "%25" # wildcard is % urlencoded
@@ -33,20 +34,17 @@ class Result(object):
         return self._issuer_name
 
 def help():
-    print("Helper Certificate Transparency")
+    print("%s\tCertificate Transparency Module for domain discovery")
 
 def execute(target):
-    print("Execute on %s" % target)
+    print("%s on %s" % (NAME, target))
     scan(target)
 
 def scan(target):
     # Prepare target replace * with %25
     search_query = target.replace('*', '%25')
-    print(target)
     url = '{}{}{}'.format(URL, PATH, search_query)
-
     r = requests.get(url)
-
     page = r.content
     soup = bs4.BeautifulSoup(page, 'html.parser')
     trs = soup.findAll('table')[1].find('tr').findAll('tr')
@@ -56,9 +54,7 @@ def scan(target):
         if tds:
             single_result = Result(tds[3].string,tds[1].string,tds[2].string,tds[4].findAll('a')[0].string)
             results.append(single_result)
-
     output(results)
-
 def output(results):
     tab = tt.Texttable()
     headings = ['Domain','Logged At','Not Before','Issuer Name']

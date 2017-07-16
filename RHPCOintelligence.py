@@ -11,7 +11,7 @@ CONST_SERVICE_PATH = "services/"
 
 
 def worker(scanless):
-    print(threading.current_thread())
+    #print(threading.current_thread())
     while True:
         item = q.get()
         if item is None:
@@ -41,13 +41,10 @@ def route_command(parser, args, scanless):
     if len(sys.argv) <= 1:
         parser.print_help()
         return
-    #
-    #
     if args['list']:
         scanless.get_helpers()
         return
     #
-    print(args)
     serviceList = lib.Utils.Utils.createServiceList(args['scanner'])
     target = args['target']
     if target is None:
@@ -84,7 +81,6 @@ def get_parser():
     parser.add_argument('-t', '--target', help='ip or domain to scan', type=str)
     parser.add_argument('-s', '--scanner', help='scanner to use', type=str, default='ipservice', nargs='*')
     parser.add_argument('-l', '--list', help='list scanners', action='store_true')
-
     return parser
 
 
