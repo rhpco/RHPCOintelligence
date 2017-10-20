@@ -4,7 +4,7 @@ import queue
 import threading
 import lib.Scanless
 import lib.WorkerCommand
-import lib.Utils
+#import lib.Utils
 
 CONST_SERVICE_PATH = "services/"
 
