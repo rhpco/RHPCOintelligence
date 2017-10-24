@@ -34,7 +34,7 @@ class Result(object):
         return self._issuer_name
 
 def help():
-    print("%s\tCertificate Transparency Module for domain discovery")
+    print("%s\tCertificate Transparency Module for domain discovery" % MODULE_NAME)
 
 def execute(target):
     print("%s on %s" % (NAME, target))
