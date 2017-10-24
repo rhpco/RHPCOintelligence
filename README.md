@@ -2,18 +2,12 @@
 
 A simple tool for OSINT intelligence
 
-## Installation
+## Installation & run
 ```
 pipenv run python3 RHPCOintelligence.py
 ```
-or
 
-```
-source virtualenv/bin/activate
-python RHPCOintelligence.py
-deactivate
-```
-## Usage
+### Usage
 ```bash
 python3 RHPCOscanless.py -s <SERVICE1> <SERVICE2> -t <TARGET>
 ```
