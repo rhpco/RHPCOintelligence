@@ -2,9 +2,17 @@
 
 A simple tool for OSINT intelligence
 
-## Installation & run
+## Installation 
 ```
+pipenv install
 pipenv run python3 RHPCOintelligence.py
+```
+or
+```
+pipenv install
+pipenv shell
+python RHPCOintelligence.py
+
 ```
 
 ### Usage
