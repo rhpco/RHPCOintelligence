@@ -77,7 +77,7 @@ def banner():
 
 def get_parser():
     banner()
-    parser = argparse.ArgumentParser(description='RHPCOintelligence, OSINT tool')
+    parser = argparse.ArgumentParser(description='RHPCOintelligence, OSINT tool ')
     parser.add_argument('-t', '--target', help='ip or domain to scan', type=str)
     parser.add_argument('-s', '--scanner', help='scanner to use', type=str, default='ipservice', nargs='*')
     parser.add_argument('-l', '--list', help='list scanners', action='store_true')
